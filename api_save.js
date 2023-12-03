@@ -49,8 +49,15 @@ exports.put_save = async (req, res) => {
           return;
         };
         //SAVE THE ARTICLE TO RDS 
-        sql_save_query = 'INSERT INTO articles (userid, url, headline, pubdate, newsdesk, sectionname, authorfirst, authorlast, bucketkey) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        dbConnection.query(sql_save_query, [userid, data.web_url, data.headline, data.pub_date, data.news_desk, data.section_name, data.first_name, data.last_name, data.bucketkey], async function (err, result) {
+        sql_save_query = 'INSERT INTO articles (userid, url, headline, pubdate, newsdesk, sectionname, authorfirst, authorlast, bucketkey) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
+        var sql_param_list = [userid, data.web_url, data.headline, data.pub_date, data.news_desk, data.section_name, data.first_name, data.last_name, data.bucketkey]
+        
+        for (var keyword of data.keywords) {
+          sql_save_query += 'INSERT INTO keywords (articleid, keyword) VALUES (LAST_INSERT_ID(), ?);'
+          sql_param_list.push(keyword)
+        }
+        
+        dbConnection.query(sql_save_query, sql_param_list, async function (err, result) {
           if (err) {
             res.status(400).json({
               "message": err.message
