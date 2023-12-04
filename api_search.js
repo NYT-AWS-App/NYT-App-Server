@@ -11,9 +11,11 @@ exports.article_search = async (req, res) => {
 
     console.log("call to /search...");
 
-    var user_id = req.query.userid;
-    var search_filter = req.query.filter;
-    var search_term = req.query.term;
+    var body = req.body
+
+    var user_id = body.userid;
+    var search_filter = body.filter;
+    var search_term = body.term;
 
     var sql_param_list = []
 
