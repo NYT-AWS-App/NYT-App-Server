@@ -31,13 +31,13 @@ exports.article_search = async (req, res) => {
       } else {
         sql_param_list = [user_id, author_first, author_first];
       }
-      sql = `SELECT * FROM articles WHERE userid=? AND authorfirst LIKE CONCAT('%', ?, '%') OR authorlast LIKE CONCAT('%', ?, '%');`;
+      sql = `SELECT * FROM articles WHERE userid=? AND (authorfirst LIKE CONCAT('%', ?, '%') OR authorlast LIKE CONCAT('%', ?, '%'));`;
     } else if (search_filter == "pubdate") {
       sql = `SELECT * FROM articles WHERE userid=? AND pubdate LIKE CONCAT('%', ?, '%')`;
       sql_param_list = [user_id, search_term];
     } else if (search_filter == "keyword") {
-      sql = `SELECT * FROM articles WHERE articleid IN (SELECT articleid FROM keywords WHERE keyword LIKE CONCAT('%', ?, '%'));`;
-      sql_param_list = [search_term];
+      sql = `SELECT * FROM articles WHERE userid=? AND articleid IN (SELECT articleid FROM keywords WHERE keyword LIKE CONCAT('%', ?, '%'));`;
+      sql_param_list = [user_id, search_term];
     }
 
     dbConnection.query(sql, sql_param_list, function (err, result) {
