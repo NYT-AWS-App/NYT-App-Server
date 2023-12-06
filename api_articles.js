@@ -11,25 +11,38 @@ exports.get_articles = async (req, res) => {
   try {
     data = req.body;
 
-    articles_sql = `SELECT * FROM articles WHERE userid = ? LIMIT 10`;
-    dbConnection.query(articles_sql, [data.userid], function (err, result) {
-      if (err) {
-        res.status(400).json({
-          message: err.message,
-        });
+    articles_sql = `SELECT * FROM users WHERE userid = ?;
+                    SELECT * FROM articles WHERE userid = ?;`;
+    dbConnection.query(
+      articles_sql,
+      [data.userid, data.userid],
+      function (err, result) {
+        if (err) {
+          res.status(400).json({
+            message: err.message,
+          });
+          return;
+        }
+        if (result[0].length == 0) {
+          res.status(400).json({
+            message: "No such user...",
+          });
+          return;
+        }
+        if (result[1].length == 0) {
+          res.status(400).json({
+            message: "No articles found...",
+            articles: [],
+          });
+          return;
+        } else {
+          res.json({
+            message: "Articles found",
+            articles: result[1],
+          });
+        }
       }
-      if (result.length == 0) {
-        res.json({
-          message: "No articles found",
-          articles: [],
-        });
-      } else {
-        res.json({
-          message: "Articles found",
-          articles: result,
-        });
-      }
-    });
+    );
   } catch (err) {
     //try
     console.log("**ERROR:", err.message);
