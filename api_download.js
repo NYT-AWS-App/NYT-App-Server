@@ -12,29 +12,40 @@ exports.get_download = async (req, res) => {
 
   try {
     var articleid = req.params.articleid;
+    var userid = req.params.userid;
     dbConnection.query(
-      "select * from articles where articleid = ?",
-      [articleid],
-      async function (error, rows) {
+      "SELECT * FROM users WHERE userid = ?",
+      [userid],
+      async function (error, result) {
         if (error) {
           res.status(400).json({
             message: error.message,
             data: "",
           });
+          return;
         }
-        if (rows.length == 0) {
+        if (result.length == 0) {
           res.status(400).json({
-            message: "No such article...",
+            message: "No such user...",
             data: "",
           });
+          return;
         } else {
           dbConnection.query(
-            "SELECT * FROM users WHERE userid = ?",
-            [rows[0].userid],
-            async function (err, result) {
+            "select * from articles where articleid = ? and userid = ?",
+            [articleid, userid],
+            async function (err, rows) {
               if (err) {
                 res.status(400).json({
-                  message: "Check if user exists query failed",
+                  message: err.message,
+                  data: "",
+                });
+                return;
+              }
+              if (rows.length == 0) {
+                res.status(400).json({
+                  message:
+                    "Article not found... Does the inputted article belong to the inputted user?",
                   data: "",
                 });
                 return;
