@@ -33,7 +33,7 @@ exports.put_save = async (req, res) => {
       }
       bucketfolder = result[0].bucketfolder;
       //CHECK IF USER HAS ALREADY SAVED THIS ARTICLE
-      sql_article_query = `SELECT * FROM articles WHERE bucketkey = ? and userid = ?`;
+      sql_article_query = `SELECT * FROM articles WHERE bucketkey = ? and userid = ?;`;
       dbConnection.query(
         sql_article_query,
         [data.bucketkey, userid],
@@ -53,9 +53,6 @@ exports.put_save = async (req, res) => {
           //SAVE THE ARTICLE TO RDS
           sql_save_query =
             "INSERT INTO articles (userid, url, headline, pubdate, newsdesk, sectionname, authorfirst, authorlast, bucketkey) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-          // sql_save_query = 'INSERT INTO articles \
-          //  (userid, url, headline, pubdate, newsdesk, sectionname, authorfirst, authorlast, bucketkey) \
-          //  VALUES (?, ?, ?, ?, ?, ?, ?, ?, CONCAT(SELECT bucketfolder FROM users WHERE userid=?, '/', ?));'
           var sql_param_list = [
             userid,
             data.web_url,
@@ -68,10 +65,12 @@ exports.put_save = async (req, res) => {
             data.bucketkey,
           ];
 
-          for (var keyword of data.keywords) {
-            sql_save_query +=
-              "INSERT INTO keywords (articleid, keyword) VALUES (LAST_INSERT_ID(), ?);";
-            sql_param_list.push(keyword);
+          if (data.keywords) {
+            for (var keyword of data.keywords) {
+              sql_save_query +=
+                "INSERT INTO keywords (articleid, keyword) VALUES (LAST_INSERT_ID(), ?);";
+              sql_param_list.push(keyword);
+            }
           }
 
           dbConnection.query(
@@ -96,8 +95,17 @@ exports.put_save = async (req, res) => {
               });
               try {
                 const response = await s3.send(command);
+
+                // GET ARTICLE ID (WAY TO DO SO DEPENDENT ON PRESENCE OF KEYWORDS)
+                var articleid;
+                if (result.length > 1) {
+                  articleid = result[0].insertId;
+                } else {
+                  articleid = result.insertId;
+                }
                 res.status(200).json({
                   message: "Saved article to RDS and S3",
+                  articleid: articleid,
                 });
               } catch (err) {
                 res.status(400).json({
