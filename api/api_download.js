@@ -3,9 +3,9 @@
 //
 // Inserts a new user into the database
 //
-const dbConnection = require("./database.js");
+const dbConnection = require("../database.js");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
-const { s3, s3_bucket_name, s3_region_name } = require("./aws.js");
+const { s3, s3_bucket_name, s3_region_name } = require("../aws.js");
 
 exports.get_download = async (req, res) => {
   console.log("call to /download...");

@@ -3,7 +3,7 @@
 //
 // Retrieves all user's information
 //
-const dbConnection = require("./database.js");
+const dbConnection = require("../database.js");
 
 exports.get_users = async (req, res) => {
   console.log("call to /users...");

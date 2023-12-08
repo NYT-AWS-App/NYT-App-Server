@@ -5,8 +5,8 @@
 //
 
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
-const { s3, s3_bucket_name, s3_region_name } = require("./aws.js");
-const dbConnection = require("./database.js");
+const { s3, s3_bucket_name, s3_region_name } = require("../aws.js");
+const dbConnection = require("../database.js");
 
 exports.put_save = async (req, res) => {
   console.log("call to /save...");

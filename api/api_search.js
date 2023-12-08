@@ -4,8 +4,8 @@
 // Searches through RDS for matching search terms to find saved articles
 //
 
-const { s3, s3_bucket_name, s3_region_name } = require("./aws.js");
-const dbConnection = require("./database.js");
+const { s3, s3_bucket_name, s3_region_name } = require("../aws.js");
+const dbConnection = require("../database.js");
 
 exports.article_search = async (req, res) => {
   console.log("call to /search...");

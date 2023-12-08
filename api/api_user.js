@@ -3,7 +3,7 @@
 //
 // Inserts a new user into the database
 //
-const dbConnection = require("./database.js");
+const dbConnection = require("../database.js");
 
 exports.put_user = async (req, res) => {
   console.log("call to /user...");

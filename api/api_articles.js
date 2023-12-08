@@ -3,7 +3,7 @@
 //
 // Retrieves user's saved articles
 //
-const dbConnection = require("./database.js");
+const dbConnection = require("../database.js");
 
 exports.get_articles = async (req, res) => {
   console.log("call to /articles...");
